@@ -15,6 +15,28 @@ let availableLanguages = [
 struct HomeView: View {
     @State private var word: String = ""
     @State private var language: String = "es"
+    @State private var isLoading: Bool = false
+    private var translationsRepository: TranslationsRepository
+    
+    init(translationsRepository: TranslationsRepository) {
+        self.translationsRepository = translationsRepository
+    }
+    
+    private func onPressSearch() {
+        Task {
+            isLoading = true
+            defer { isLoading = false }
+            
+            do {
+                let result = try await translationsRepository.translate(
+                    word: word, source: "en", target: language
+                )
+                print(result)
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+    }
     
     var body: some View {
         VStack {
@@ -23,6 +45,7 @@ struct HomeView: View {
                 .padding(.top)
             
             TextField("Type a word", text: $word, prompt: Text("Type a word"))
+                .autocapitalization(.none)
                 .padding(15)
                 .frame(width: 250, height: 50)
                 .background(.white)
@@ -41,14 +64,24 @@ struct HomeView: View {
                     .cornerRadius(8)
             }
             Spacer()
-            Button("Search") {
-                
+            Button(action:{
+                onPressSearch()
+            }) {
+                HStack {
+                    if isLoading {
+                        ProgressView()
+                            .tint(.white)
+                            .scaleEffect(0.8)
+                    }
+                    Text(isLoading ? "" : "Search")
+                }
             }
             .padding()
             .frame(width: 250, height: 50)
             .background(Color("Green"))
             .foregroundColor(.white)
             .cornerRadius(8)
+            .disabled(word.isEmpty || isLoading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(.accent)
@@ -56,5 +89,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(translationsRepository: TranslationsRepository())
 }
