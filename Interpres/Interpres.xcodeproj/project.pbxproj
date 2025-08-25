@@ -100,6 +100,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Domain/TranslationResponse.swift,
+				Domain/TranslationStore.swift,
 				Domain/URLSessionProtocol.swift,
 				Infrastructure/TranslationsRepository.swift,
 			);
@@ -109,6 +110,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Domain/TranslationResponse.swift,
+				Domain/TranslationStore.swift,
 				Domain/URLSessionProtocol.swift,
 			);
 			target = 2435291F2E4F421200985CFF /* InterpresUITests */;

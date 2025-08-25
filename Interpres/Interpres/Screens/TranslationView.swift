@@ -8,13 +8,18 @@
 import SwiftUI
 
 struct TranslationView: View {
-    let translation: String
+    @EnvironmentObject var translationStore: TranslationStore
     
     var body: some View {
         VStack {
+            HStack {
+                WordInput()
+                SearchButton(isSmall: true)
+            }
+            .padding(.top)
             Text("Translation Result")
                 .font(.title)
-            Text(translation)
+            Text(translationStore.translation ?? "")
                 .padding()
             Spacer()
         }
@@ -24,5 +29,7 @@ struct TranslationView: View {
 }
 
 #Preview {
-    TranslationView(translation: "Gato")
+    let translationStore: TranslationStore = TranslationStore()
+    translationStore.translation = "Traducción"
+    return TranslationView().environmentObject(translationStore)
 }

@@ -9,11 +9,13 @@ import SwiftUI
 
 @main
 struct InterpresApp: App {
+    @StateObject private var translationStore = TranslationStore()
+
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                HomeView(translationsRepository: TranslationsRepository())
-            }
+                HomeView()
+            }.environmentObject(translationStore)
         }
     }
 }
