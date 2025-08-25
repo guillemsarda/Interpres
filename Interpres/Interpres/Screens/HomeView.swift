@@ -10,6 +10,19 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var translationStore: TranslationStore
     
+    private func onPressSearch() {
+        Task {
+            do {
+                let result = try await translationStore.translationsRepository.translate(
+                    word: translationStore.word, source: "en", target: translationStore.language
+                )
+                translationStore.translation = result
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+    }
+    
     var body: some View {
         VStack {
             Text("INTERPRES")
@@ -19,7 +32,7 @@ struct HomeView: View {
                 .padding(EdgeInsets(top: 40, leading: 0, bottom: 0, trailing: 0))
             LanguageMenu()
             Spacer()
-            SearchButton()
+            SearchButton(onPressSearch: onPressSearch)
             .navigationDestination(item: $translationStore.translation) {_ in
                 TranslationView()
             }

@@ -8,32 +8,26 @@
 import SwiftUI
 
 struct SearchButton: View {
-    var isSmall: Bool
     @EnvironmentObject var translationStore: TranslationStore
     @State private var isLoading: Bool = false
+    private var isSmall: Bool
+    private var onPressSearch: () async -> Void = { }
     
-    init(isSmall: Bool? = false) {
+    init(isSmall: Bool? = false, onPressSearch: @escaping () -> Void) {
         self.isSmall = isSmall ?? false
-    }
-    private func onPressSearch() {
-        Task {
-            isLoading = true
-            defer { isLoading = false }
-            
-            do {
-                let result = try await translationStore.translationsRepository.translate(
-                    word: translationStore.word, source: "en", target: translationStore.language
-                )
-                translationStore.translation = result
-            } catch {
-                print("Error: \(error)")
-            }
-        }
+        self.onPressSearch = onPressSearch
     }
     
     var body: some View {
-        Button(action:{
-            onPressSearch()
+        Button(action: {
+            Task {
+                isLoading = true
+                defer {
+                    isLoading = false
+                }
+                await onPressSearch()
+                isLoading = false
+            }
         }) {
             HStack {
                 if isLoading {
@@ -60,5 +54,8 @@ struct SearchButton: View {
 #Preview {
     let translationStore = TranslationStore()
     translationStore.word = "Hello"
-    return SearchButton(isSmall: true).environmentObject(translationStore)
+    
+    return SearchButton(isSmall: true, onPressSearch: {
+        print("Clicked")
+    }).environmentObject(translationStore)
 }
