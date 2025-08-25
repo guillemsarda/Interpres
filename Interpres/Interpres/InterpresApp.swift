@@ -11,7 +11,9 @@ import SwiftUI
 struct InterpresApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                HomeView(translationsRepository: TranslationsRepository())
+            }
         }
     }
 }

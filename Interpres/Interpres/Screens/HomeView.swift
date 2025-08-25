@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let availableLanguages = [
+private let availableLanguages = [
     "es": "Español",
     "it": "Italiano"
 ]
@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var word: String = ""
     @State private var language: String = "es"
     @State private var isLoading: Bool = false
+    @State private var translationResult: String?
     private var translationsRepository: TranslationsRepository
     
     init(translationsRepository: TranslationsRepository) {
@@ -31,19 +32,19 @@ struct HomeView: View {
                 let result = try await translationsRepository.translate(
                     word: word, source: "en", target: language
                 )
-                print(result)
+                translationResult = result
             } catch {
                 print("Error: \(error)")
             }
         }
     }
+    @State private var isShowingDetailView = false
     
     var body: some View {
         VStack {
             Text("INTERPRES")
                 .font(.custom("EBGaramond-Medium", size: 50))
                 .padding(.top)
-            
             TextField("Type a word", text: $word, prompt: Text("Type a word"))
                 .autocapitalization(.none)
                 .padding(15)
@@ -81,7 +82,11 @@ struct HomeView: View {
             .background(Color("Green"))
             .foregroundColor(.white)
             .cornerRadius(8)
+            .opacity(word.isEmpty ? 0.7 : 1)
             .disabled(word.isEmpty || isLoading)
+            .navigationDestination(item: $translationResult) { result in
+                TranslationView(translation: result)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(.accent)
